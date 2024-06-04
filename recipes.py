@@ -1,6 +1,6 @@
 import functools
 from flask import jsonify, Blueprint, flash, g, redirect, render_template, request, session, url_for
-from db import get_db
+from db import get_db, close_db
 
 bp = Blueprint('recipes', __name__, url_prefix='/recipes')
 
@@ -11,6 +11,7 @@ def index():
     cursor.execute('SELECT id, title, making_time, serves, ingredients, cost FROM recipes ORDER BY created_at ASC')
     recipes = cursor.fetchall()
     cursor.close()
+    close_db()
 
     # Convert posts to a list of dictionaries
     recipes_list = [dict(row) for row in recipes]
@@ -34,6 +35,7 @@ def get(id):
     cursor.execute('SELECT id, title, making_time, serves, ingredients, cost FROM recipes WHERE id = %s', [id])
     recipe = cursor.fetchone()
     cursor.close()
+    close_db()
 
     # Check if the recipe is empty and return 404 if so
     if recipe is None:
@@ -99,6 +101,7 @@ def create():
     )
     recipe = cursor.fetchone()
     cursor.close()
+    close_db()
 
     # Convert the recipe to a dictionary
     recipe_dict = dict(recipe)
@@ -167,6 +170,7 @@ def update_recipe(id=1):
     recipe = cursor.fetchone()
 
     cursor.close()
+    close_db()
 
     # Convert the recipe to a dictionary
     recipe_dict = dict(recipe)
@@ -192,5 +196,6 @@ def delete(id):
     cursor.execute('DELETE FROM recipes WHERE id = %s', (id,))
     db.commit()
     cursor.close()
+    close_db()
 
     return jsonify({ "message": "Recipe successfully removed!" }), 200
