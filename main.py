@@ -12,7 +12,7 @@ db = mysql.connector.connect(
             user=os.environ["DB_USERNAME"],
             passwd=os.environ["DB_PASSWORD"],
             db=os.environ["DB_DATABASE"],
-            port=os.environ["DB_PORT"],
+            port=os.environ["DB_PORT"]
         )
 
 
@@ -40,16 +40,14 @@ def index():
 
 @app.route('/recipes/<int:id>', methods=['GET'])
 def get(id):
-    # db = get_db()
     cursor = db.cursor(dictionary=True)
     cursor.execute('SELECT id, title, making_time, serves, ingredients, cost FROM recipes WHERE id = %s', [id])
     recipe = cursor.fetchone()
     cursor.close()
-    # close_db()
 
     # Check if the recipe is empty and return 404 if so
     if recipe is None:
-        return jsonify({'error': 'No recipe found'}), 200
+        return jsonify({'message': 'No recipe found'}), 200
 
     recipe_dict = dict(recipe)
 
@@ -94,7 +92,6 @@ def create():
         return jsonify(response), 200
 
     # Insert data into the database
-    # db = get_db()
     cursor = db.cursor(dictionary=True)
     cursor.execute(
         'INSERT INTO recipes (title, making_time, serves, ingredients, cost)'
@@ -111,7 +108,6 @@ def create():
     )
     recipe = cursor.fetchone()
     cursor.close()
-    # close_db()
 
     # Convert the recipe to a dictionary
     recipe_dict = dict(recipe)
@@ -126,7 +122,6 @@ def create():
 
 @app.route('/recipes/<int:id>', methods=['PATCH'])
 def update_recipe(id=1):
-    # db = get_db()
     cursor = db.cursor(dictionary=True)
     cursor.execute('SELECT * FROM recipes WHERE id = %s',[id])
     recipe = cursor.fetchone()
@@ -180,7 +175,6 @@ def update_recipe(id=1):
     recipe = cursor.fetchone()
 
     cursor.close()
-    # close_db()
 
     # Convert the recipe to a dictionary
     recipe_dict = dict(recipe)
@@ -195,7 +189,6 @@ def update_recipe(id=1):
 
 @app.route('/recipes/<int:id>', methods=['DELETE'])
 def delete(id):
-    # db = get_db()
     cursor = db.cursor(dictionary=True)
     cursor.execute('SELECT * FROM recipes WHERE id = %s',[id])
     recipe = cursor.fetchone()
@@ -206,7 +199,6 @@ def delete(id):
     cursor.execute('DELETE FROM recipes WHERE id = %s', (id,))
     db.commit()
     cursor.close()
-    # close_db()
 
     return jsonify({ "message": "Recipe successfully removed!" }), 200
 
