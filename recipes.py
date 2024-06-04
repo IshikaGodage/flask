@@ -6,12 +6,12 @@ bp = Blueprint('recipes', __name__, url_prefix='/recipes')
 
 @bp.route('/', methods=['GET'])
 def index():
-    db = g.db
+    db = get_db()
     cursor = db.cursor(dictionary=True)
     cursor.execute('SELECT id, title, making_time, serves, ingredients, cost FROM recipes ORDER BY created_at ASC')
     recipes = cursor.fetchall()
     cursor.close()
-    # close_db()
+    close_db()
 
     # Convert posts to a list of dictionaries
     recipes_list = [dict(row) for row in recipes]
@@ -30,12 +30,12 @@ def index():
 
 @bp.route('/<int:id>', methods=['GET'])
 def get(id):
-    db = g.db
+    db = get_db()
     cursor = db.cursor(dictionary=True)
     cursor.execute('SELECT id, title, making_time, serves, ingredients, cost FROM recipes WHERE id = %s', [id])
     recipe = cursor.fetchone()
     cursor.close()
-    # close_db()
+    close_db()
 
     # Check if the recipe is empty and return 404 if so
     if recipe is None:
@@ -84,7 +84,7 @@ def create():
         return jsonify(response), 200
 
     # Insert data into the database
-    db = g.db
+    db = get_db()
     cursor = db.cursor(dictionary=True)
     cursor.execute(
         'INSERT INTO recipes (title, making_time, serves, ingredients, cost)'
@@ -101,7 +101,7 @@ def create():
     )
     recipe = cursor.fetchone()
     cursor.close()
-    # close_db()
+    close_db()
 
     # Convert the recipe to a dictionary
     recipe_dict = dict(recipe)
@@ -116,7 +116,7 @@ def create():
 
 @bp.route('/<int:id>', methods=['PATCH'])
 def update_recipe(id=1):
-    db = g.db
+    db = get_db()
     cursor = db.cursor(dictionary=True)
     cursor.execute('SELECT * FROM recipes WHERE id = %s',[id])
     recipe = cursor.fetchone()
@@ -170,7 +170,7 @@ def update_recipe(id=1):
     recipe = cursor.fetchone()
 
     cursor.close()
-    # close_db()
+    close_db()
 
     # Convert the recipe to a dictionary
     recipe_dict = dict(recipe)
@@ -185,7 +185,7 @@ def update_recipe(id=1):
 
 @bp.route('/<int:id>', methods=['DELETE'])
 def delete(id):
-    db = g.db
+    db = get_db()
     cursor = db.cursor(dictionary=True)
     cursor.execute('SELECT * FROM recipes WHERE id = %s',[id])
     recipe = cursor.fetchone()
@@ -196,6 +196,6 @@ def delete(id):
     cursor.execute('DELETE FROM recipes WHERE id = %s', (id,))
     db.commit()
     cursor.close()
-    # close_db()
+    close_db()
 
     return jsonify({ "message": "Recipe successfully removed!" }), 200
