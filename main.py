@@ -8,6 +8,8 @@ test = load_dotenv()  # take environment variables from .env.
 
 
 db = mysql.connector.connect(
+            pool_name = "mypool",
+            pool_size = 10,
             host=os.environ["DB_HOST"],
             user=os.environ["DB_USERNAME"],
             passwd=os.environ["DB_PASSWORD"],
