@@ -17,7 +17,7 @@ def index():
 
     # Check if posts are empty and return 404 if so
     if not recipes_list:
-        return jsonify({'error': 'No posts found'}), 404
+        return jsonify({'error': 'No posts found'}), 200
 
     # Return the posts as JSON with a 200 status code
     response = {
@@ -37,7 +37,7 @@ def get(id):
 
     # Check if the recipe is empty and return 404 if so
     if recipe is None:
-        return jsonify({'error': 'No recipe found'}), 404
+        return jsonify({'error': 'No recipe found'}), 200
 
     recipe_dict = dict(recipe)
 
@@ -79,7 +79,7 @@ def create():
             "message": "Recipe creation failed!",
             "required": "title, making_time, serves, ingredients, cost"
         }
-        return jsonify(response), 404
+        return jsonify(response), 200
 
     # Insert data into the database
     db = get_db()
@@ -119,7 +119,7 @@ def update_recipe(id=1):
     recipe = cursor.fetchone()
 
     if recipe is None:
-        return jsonify({"message": "No recipe found"}), 404
+        return jsonify({"message": "No recipe found"}), 200
 
     data = request.get_json()
     title = data.get('title')
@@ -129,7 +129,7 @@ def update_recipe(id=1):
     cost = data.get('cost')
 
     if not data:
-        return jsonify({"message": "No data provided for update."}), 404
+        return jsonify({"message": "No data provided for update."}), 200
 
     # Construct the SET part of the SQL query dynamically based on provided fields
     set_query = []
@@ -187,7 +187,7 @@ def delete(id):
     recipe = cursor.fetchone()
 
     if recipe is None:
-        return jsonify({"message": "No recipe found"}), 404
+        return jsonify({"message": "No recipe found"}), 200
 
     cursor.execute('DELETE FROM recipes WHERE id = %s', (id,))
     db.commit()
